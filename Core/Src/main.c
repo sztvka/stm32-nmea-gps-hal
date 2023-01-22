@@ -21,8 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <string.h>
-#include <stdlib.h>
+#include "neo6m_parse.h"
 //#include "neo6m.h"
 /* USER CODE END Includes */
 
@@ -55,7 +54,7 @@ uint8_t RxBuffer[RxBuffer_SIZE];
 uint8_t DataBuffer[DataBuffer_SIZE];
 int dataStart[20];
 int dataEnd[20];
-char *data[15];
+//char *data[15];
 
 
 /* USER CODE END PV */
@@ -73,19 +72,10 @@ static void MX_USART1_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-
+/*
 void ParseGPRS(){
     int dataStartArrayPos = 0;
     int dataEndArrayPos = 0;
- /*   for(int i =0; i<DataBuffer_SIZE; i++){
-        if(DataBuffer[i] == '$'){
-            dataStart[dataStartArrayPos++] = i;
-        }
-        else if(DataBuffer[i] == '\n'){
-            dataEnd[dataEndArrayPos++] = i;
-        }
-    }
-*/
     char * token = strtok(DataBuffer, "$");
     int cnt = 0;
     while(token !=NULL){
@@ -94,13 +84,14 @@ void ParseGPRS(){
         token = strtok(NULL, "$");
     }
 }
-
+*/
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     oldPos = newPos;
     if(oldPos + Size > DataBuffer_SIZE){
-        ParseGPRS();
+        volatile GPS *gps_data = malloc(sizeof(GPS)); //free later!!!!
+        neo6m_parse(gps_data, DataBuffer);
         memset(DataBuffer, 0, DataBuffer_SIZE);
         oldPos = 0;
 
