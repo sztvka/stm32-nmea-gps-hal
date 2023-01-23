@@ -6,7 +6,9 @@
 
 
 char *data[15];
-
+//"GPGGA add
+//
+//
 int gps_checksum(char *nmea_data)
 {
     char recv_crc[2];
@@ -14,8 +16,8 @@ int gps_checksum(char *nmea_data)
     recv_crc[1] = nmea_data[strlen(nmea_data) - 3];
     int crc = 0;
     int i;
-    //exclude the $ sign from the start and the CRLF plus CRC with an * from the end
-    for (i = 1; i < strlen(nmea_data) - 5; i ++) {
+    //exclude the CRLF plus CRC with an * from the end
+    for (i = 0; i < strlen(nmea_data) - 5; i ++) {
         crc ^= nmea_data[i];
     }
     int receivedHash = strtol(recv_crc, NULL, 16);
@@ -26,6 +28,31 @@ int gps_checksum(char *nmea_data)
         return 0;
     }
 }
+
+int neo6m_GPGSA(GPS *gps_data, char*inputString){
+    char *values[25];
+    int counter = 0;
+    memset(values, 0, sizeof(values));
+    char *marker = strtok(inputString, ",");
+    while (marker != NULL) {
+        values[counter++] = malloc(strlen(marker) + 1); //free later!!!!!!
+        strcpy(values[counter - 1], marker);
+        marker = strtok(NULL, ",");
+    }
+    int fix = strtol(values[2], NULL, 10);
+    gps_data->fix = fix > 1 ? 1 : 0;
+    int satelliteCount = 0;
+    for(int i=3; i<15; i++){
+        if(values[i][0] != '\0'){
+            satelliteCount++;
+        }
+    }
+    gps_data->satelliteCount = satelliteCount;
+    for(int i=0; i<counter; i++) free(values[i]);
+    return 1;
+}
+
+
 
 int neo6m_GPGLL(GPS *gps_data, char*inputString) {
 
@@ -59,15 +86,21 @@ int neo6m_GPGLL(GPS *gps_data, char*inputString) {
         int lon_deg_strtol = strtol(lon_d, NULL, 10);
         float lon_min_strtof = strtof(lon_m, NULL);
         double lon_deg = lon_deg_strtol + lon_min_strtof / 60;
-
-        gps_data->latitude = lat_deg;
-        gps_data->longitude = lon_deg;
-        gps_data->latSide = latSide;
-        gps_data->lonSide = lonSide;
-        for(int i = 0; i<counter; i++) free(values[i]);
-
-        return 1;
+        //confirm that we aren't on null island
+        if(lon_deg_strtol == 0 || lon_min_strtof == 0 || lat_deg_strtol == 0 || lat_min_strtof == 0) {
+            for(int i = 0; i<counter; i++) free(values[i]);
+            return 0;
+        }
+        else{
+            gps_data->latitude = lat_deg;
+            gps_data->longitude = lon_deg;
+            gps_data->latSide = latSide;
+            gps_data->lonSide = lonSide;
+            for(int i = 0; i<counter; i++) free(values[i]);
+            return 1;
+        }
     }
+    else return 0;
 }
 
 void neo6m_parse(GPS *gps_data, uint8_t *buffer){
@@ -80,12 +113,13 @@ void neo6m_parse(GPS *gps_data, uint8_t *buffer){
         token = strtok(NULL, "$");
     }
     for(int i = 0; i<cnt; i++){
-       char* values[25];
        if(strstr(data[i], "\r\n")!=NULL && gps_checksum(data[i])){
            if(strstr(data[i], "GPGLL")!=NULL){
                neo6m_GPGLL(gps_data, data[i]);
            }
-
+           else if(strstr(data[i], "GPGSA")!=NULL){
+               neo6m_GPGSA(gps_data, data[i]);
+           }
        }
 
     }

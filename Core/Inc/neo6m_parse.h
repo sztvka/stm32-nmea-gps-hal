@@ -18,7 +18,7 @@ typedef struct NEO6M_DATA {
     float altitude;
     float speed;
     float course;
-    int satellites;
+    int satelliteCount;
     int fix;
     int fix_quality;
     int fix_mode;
