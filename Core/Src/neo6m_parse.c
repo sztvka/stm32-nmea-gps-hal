@@ -64,7 +64,8 @@ int neo6m_GPGLL(GPS *gps_data, char*inputString) {
         gps_data->longitude = lon_deg;
         gps_data->latSide = latSide;
         gps_data->lonSide = lonSide;
-        free(marker);
+        for(int i = 0; i<counter; i++) free(values[i]);
+
         return 1;
     }
 }
@@ -81,17 +82,7 @@ void neo6m_parse(GPS *gps_data, uint8_t *buffer){
     for(int i = 0; i<cnt; i++){
        char* values[25];
        if(strstr(data[i], "\r\n")!=NULL && gps_checksum(data[i])){
-           int counter = 0;
-           if(strstr(data[i], "GPGSA")!=NULL){
-               char *marker = strtok(data[i], ",");
-               while (marker!=NULL){
-                     values[counter++] = malloc(strlen(marker)+1); //free later!!!!!!
-                     strcpy(values[counter-1], marker);
-                     marker = strtok(NULL, ",");
-               }
-           }
-           else if(strstr(data[i], "GPGLL")!=NULL){
-
+           if(strstr(data[i], "GPGLL")!=NULL){
                neo6m_GPGLL(gps_data, data[i]);
            }
 
