@@ -11,8 +11,10 @@
 #include <stdlib.h>
 
 typedef struct NEO6M_DATA {
-    float latitude;
-    float longitude;
+    double latitude;
+    char latSide;
+    double longitude;
+    char lonSide;
     float altitude;
     float speed;
     float course;

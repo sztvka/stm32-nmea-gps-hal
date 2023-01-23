@@ -39,24 +39,32 @@ void neo6m_parse(GPS *gps_data, uint8_t *buffer){
 
                    char lat_d[2];
                    char lat_m[8];
-                   lat_d[0] = values [1][0];
-                   lat_d[1] = values [1][1];
-                   lat_m[0] = values [1][2];
-                   lat_m[1] = values [1][3];
-                   lat_m[2] = values [1][4];
-                   lat_m[3] = values [1][5];
-                   lat_m[4] = values [1][6];
-                   lat_m[5] = values [1][7];
-                   lat_m[6] = values [1][8];
+                   char latSide = values[2][0];
+                   for(int z = 0; z<2; z++) lat_d[z] = values[1][z];
+                   for(int z = 0; z<7; z++) lat_m[z] = values[1][z+2];
 
                    int lat_deg_strtol = strtol(lat_d, NULL, 10);
-//                 int lat_deg_int = atoi(lat_d);
+
                    float lat_min_strtof = strtof(lat_m, NULL);
-//                 double lat_min = atof(lat_m);
                    double lat_deg = lat_deg_strtol + lat_min_strtof/60;
                     //   0123456789
                    //lat ddmm.mmmm
-                   //lon  dddmm.mmmm
+                   //lon dddmm.mmmm
+
+
+                   char lon_d[3];
+                   char lon_m[8];
+                   char lonSide = values[4][0];
+                   for(int z = 0; z<3; z++) lon_d[z] = values[3][z];
+                   for(int z = 0; z<7; z++) lon_m[z] = values[3][z+3];
+
+                   int lon_deg_strtol = strtol(lon_d, NULL, 10);
+                   float lon_min_strtof = strtof(lon_m, NULL);
+                   double lon_deg = lon_deg_strtol + lon_min_strtof/60;
+                   gps_data->latSide = latSide;
+                   gps_data->lonSide = lonSide;
+                   gps_data->latitude = lat_deg;
+                   gps_data->longitude = lon_deg;
            }
 
        }
