@@ -9,6 +9,7 @@
 #include <stm32f4xx.h>
 #include <string.h>
 #include <stdlib.h>
+
 typedef struct NEO6M_DATA {
     float latitude;
     float longitude;
