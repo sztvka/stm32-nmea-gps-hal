@@ -47,7 +47,7 @@ DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
 #define RxBuffer_SIZE 128
-#define DataBuffer_SIZE 256
+#define DataBuffer_SIZE 512
 int oldPos = 0;
 int newPos = 0;
 uint8_t RxBuffer[RxBuffer_SIZE];

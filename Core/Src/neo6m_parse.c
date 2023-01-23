@@ -36,35 +36,39 @@ void neo6m_parse(GPS *gps_data, uint8_t *buffer){
                        strcpy(values[counter-1], marker);
                        marker = strtok(NULL, ",");
                    }
-
-                   char lat_d[2];
-                   char lat_m[8];
                    char latSide = values[2][0];
-                   for(int z = 0; z<2; z++) lat_d[z] = values[1][z];
-                   for(int z = 0; z<7; z++) lat_m[z] = values[1][z+2];
+                   if(latSide == 'S' || latSide == 'N'){ //check if data is sorta intact
+                       char lat_d[2];
+                       char lat_m[8];
+                       for(int z = 0; z<2; z++) lat_d[z] = values[1][z];
+                       for(int z = 0; z<7; z++) lat_m[z] = values[1][z+2];
 
-                   int lat_deg_strtol = strtol(lat_d, NULL, 10);
+                       int lat_deg_strtol = strtol(lat_d, NULL, 10);
 
-                   float lat_min_strtof = strtof(lat_m, NULL);
-                   double lat_deg = lat_deg_strtol + lat_min_strtof/60;
-                    //   0123456789
-                   //lat ddmm.mmmm
-                   //lon dddmm.mmmm
+                       float lat_min_strtof = strtof(lat_m, NULL);
+                       double lat_deg = lat_deg_strtol + lat_min_strtof/60;
+                       //   0123456789
+                       //lat ddmm.mmmm
+                       //lon dddmm.mmmm
 
 
-                   char lon_d[3];
-                   char lon_m[8];
-                   char lonSide = values[4][0];
-                   for(int z = 0; z<3; z++) lon_d[z] = values[3][z];
-                   for(int z = 0; z<7; z++) lon_m[z] = values[3][z+3];
+                       char lon_d[3];
+                       char lon_m[8];
+                       char lonSide = values[4][0];
+                       for(int z = 0; z<3; z++) lon_d[z] = values[3][z];
+                       for(int z = 0; z<7; z++) lon_m[z] = values[3][z+3];
 
-                   int lon_deg_strtol = strtol(lon_d, NULL, 10);
-                   float lon_min_strtof = strtof(lon_m, NULL);
-                   double lon_deg = lon_deg_strtol + lon_min_strtof/60;
-                   gps_data->latSide = latSide;
-                   gps_data->lonSide = lonSide;
-                   gps_data->latitude = lat_deg;
-                   gps_data->longitude = lon_deg;
+                       int lon_deg_strtol = strtol(lon_d, NULL, 10);
+                       float lon_min_strtof = strtof(lon_m, NULL);
+                       double lon_deg = lon_deg_strtol + lon_min_strtof/60;
+
+                       gps_data->latitude = lat_deg;
+                       gps_data->longitude = lon_deg;
+                       gps_data->latSide = latSide;
+                       gps_data->lonSide = lonSide;
+                   }
+
+
            }
 
        }
