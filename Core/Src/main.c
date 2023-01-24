@@ -138,7 +138,7 @@ int main(void)
 
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RxBuffer, RxBuffer_SIZE);
   __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
-
+  int Serialcnt = 0;
 
   /* USER CODE END 2 */
 
@@ -149,17 +149,20 @@ int main(void)
 
     if(myData.fix == 1){ //if the GPS has a fix, print the data
         char * str = malloc(sizeof(char)*200);
-        sprintf(str, "Lat: %f %c, Lon: %f %c, Alt: %f m, Satellites: %d\r\n",
-                (float)myData.latitude, myData.latSide, (float)myData.longitude, myData.lonSide, myData.altitude, myData.satelliteCount);
+        sprintf(str, "%d: Lat: %f %c, Lon: %f %c, Alt: %f m, Satellites: %d HDOP: %f\r\n",
+                Serialcnt, myData.latitude, myData.latSide, myData.longitude, myData.lonSide, myData.altitude, myData.satelliteCount, myData.hdop);
         HAL_UART_Transmit(&huart2, (uint8_t *)str, strlen(str), 1000);
         HAL_Delay(5000);
         free(str);
     }
     else{ //if the GPS doesn't have a fix, print a message
-        HAL_UART_Transmit(&huart2, (uint8_t *)"No fix\r\n", 8, 1000);
+        char *str = malloc(sizeof(char)*15);
+        sprintf(str, "%d: No fix\r\n", Serialcnt);
+        HAL_UART_Transmit(&huart2, str, strlen(str), 1000);
         HAL_Delay(5000);
+        free(str);
     }
-
+    Serialcnt++;
       /* USER CODE END WHILE */
 
   }
