@@ -1,6 +1,6 @@
 # STM32 HAL NMEA GPS library
 [![CMake](https://github.com/sztvka/stm32-nmea-gps-hal/actions/workflows/cmake.yml/badge.svg)](https://github.com/sztvka/stm32-nmea-gps-hal/actions/workflows/cmake.yml)  
-This library allows quick readout of the NMEA sentences from the GPS module. Tested with the NEO-6M module and STM32 Nucleo F411RE board.  
+This library allows quick readout of the NMEA sentences from the GPS module. The core idea was to provide freedom with serial readout methods and serial buffer sizing, in contrast to most other libraries, where the whole serial peripheral is controlled by the lib. Tested with the NEO-6M module and STM32 Nucleo F411RE board.  
 Parsed NMEA commands:
 - [$GPGSA](http://aprs.gids.nl/nmea/#gsa) - GPS active satellites count
 - [$GPGLL](http://aprs.gids.nl/nmea/#gll) - GPS position
