@@ -5,6 +5,7 @@ Parsed NMEA commands:
 - [$GPGSA](http://aprs.gids.nl/nmea/#gsa) - GPS active satellites count
 - [$GPGLL](http://aprs.gids.nl/nmea/#gll) - GPS position
 - [$GPGGA](http://aprs.gids.nl/nmea/#gga) - GPS position with altitude and [HDOP](https://en.wikipedia.org/wiki/Horizontal_dilution_of_precision)  
+
 I plan to add parsing for satellite info commands in the future, but those don't seem to be necessary for most applications.
 ## Usage
 ### Initialization
