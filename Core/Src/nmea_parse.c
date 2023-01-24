@@ -63,7 +63,7 @@ int nmea_GPGGA(GPS *gps_data, char*inputString){
         float lon_min_strtof = strtof(lon_m, NULL);
         double lon_deg = lon_deg_strtol + lon_min_strtof / 60;
 
-        if(lat_deg!=0 && lon_deg!=0){
+        if(lat_deg!=0 && lon_deg!=0 && lat_deg<90 && lon_deg<180){
             gps_data->latitude = lat_deg;
             gps_data->latSide = latSide;
             gps_data->longitude = lon_deg;
