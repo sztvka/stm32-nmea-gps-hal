@@ -54,6 +54,9 @@ uint8_t RxBuffer[RxBuffer_SIZE];
 uint8_t DataBuffer[DataBuffer_SIZE];
 int dataStart[20];
 int dataEnd[20];
+
+GPS myData;
+
 //char *data[15];
 
 
@@ -90,8 +93,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     oldPos = newPos;
     if(oldPos + Size > DataBuffer_SIZE){
-        volatile GPS *gps_data = malloc(sizeof(GPS)); //free later!!!!
-        neo6m_parse(gps_data, DataBuffer);
+        //volatile GPS *gps_data = malloc(sizeof(GPS)); //free later!!!!
+        neo6m_parse(&myData, DataBuffer);
         memset(DataBuffer, 0, DataBuffer_SIZE);
         oldPos = 0;
 

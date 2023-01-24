@@ -16,12 +16,8 @@ typedef struct NEO6M_DATA {
     double longitude;
     char lonSide;
     float altitude;
-    float speed;
-    float course;
+    float hdop;
     int satelliteCount;
     int fix;
-    int fix_quality;
-    int fix_mode;
-    int fix_type;
 } GPS;
 void neo6m_parse(GPS *gps_data, uint8_t *buffer);

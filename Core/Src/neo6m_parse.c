@@ -29,6 +29,66 @@ int gps_checksum(char *nmea_data)
     }
 }
 
+int neo6m_GPGGA(GPS *gps_data, char*inputString){
+    char *values[25];
+    int counter = 0;
+    memset(values, 0, sizeof(values));
+    char *marker = strtok(inputString, ",");
+    while (marker != NULL) {
+        values[counter++] = malloc(strlen(marker) + 1); //free later!!!!!!
+        strcpy(values[counter - 1], marker);
+        marker = strtok(NULL, ",");
+    }
+    char lonSide = values[5][0];
+    char latSide = values[3][0];
+
+    if(latSide == 'S' || latSide == 'N'){
+        char lat_d[2];
+        char lat_m[7];
+        for (int z = 0; z < 2; z++) lat_d[z] = values[2][z];
+        for (int z = 0; z < 6; z++) lat_m[z] = values[2][z + 2];
+
+        int lat_deg_strtol = strtol(lat_d, NULL, 10);
+        float lat_min_strtof = strtof(lat_m, NULL);
+        double lat_deg = lat_deg_strtol + lat_min_strtof / 60;
+
+        char lon_d[3];
+        char lon_m[7];
+
+        for (int z = 0; z < 3; z++) lon_d[z] = values[4][z];
+        for (int z = 0; z < 6; z++) lon_m[z] = values[4][z + 3];
+
+        int lon_deg_strtol = strtol(lon_d, NULL, 10);
+        float lon_min_strtof = strtof(lon_m, NULL);
+        double lon_deg = lon_deg_strtol + lon_min_strtof / 60;
+
+        if(lat_deg!=0 && lon_deg!=0){
+            gps_data->latitude = lat_deg;
+            gps_data->latSide = latSide;
+            gps_data->longitude = lon_deg;
+            gps_data->lonSide = lonSide;
+            float altitude = strtof(values[9], NULL);
+            gps_data->altitude = altitude!=0 ? altitude : gps_data->altitude;
+            gps_data->satelliteCount = strtol(values[7], NULL, 10);
+
+            int fixQuality = strtol(values[6], NULL, 10);
+            gps_data->fix = fixQuality > 0 ? 1 : 0;
+
+            float hdop = strtof(values[8], NULL);
+            gps_data->hdop = hdop!=0 ? hdop : gps_data->hdop;
+        }
+        else {
+            for(int i=0; i<counter; i++) free(values[i]);
+            return 0;
+        }
+
+    }
+
+    for(int i=0; i<counter; i++) free(values[i]);
+    return 1;
+}
+
+
 int neo6m_GPGSA(GPS *gps_data, char*inputString){
     char *values[25];
     int counter = 0;
@@ -68,20 +128,19 @@ int neo6m_GPGLL(GPS *gps_data, char*inputString) {
     char latSide = values[2][0];
     if (latSide == 'S' || latSide == 'N') { //check if data is sorta intact
         char lat_d[2];
-        char lat_m[8];
+        char lat_m[7];
         for (int z = 0; z < 2; z++) lat_d[z] = values[1][z];
-        for (int z = 0; z < 7; z++) lat_m[z] = values[1][z + 2];
+        for (int z = 0; z < 6; z++) lat_m[z] = values[1][z + 2];
 
         int lat_deg_strtol = strtol(lat_d, NULL, 10);
-
         float lat_min_strtof = strtof(lat_m, NULL);
         double lat_deg = lat_deg_strtol + lat_min_strtof / 60;
 
         char lon_d[3];
-        char lon_m[8];
+        char lon_m[7];
         char lonSide = values[4][0];
         for (int z = 0; z < 3; z++) lon_d[z] = values[3][z];
-        for (int z = 0; z < 7; z++) lon_m[z] = values[3][z + 3];
+        for (int z = 0; z < 6; z++) lon_m[z] = values[3][z + 3];
 
         int lon_deg_strtol = strtol(lon_d, NULL, 10);
         float lon_min_strtof = strtof(lon_m, NULL);
@@ -119,6 +178,9 @@ void neo6m_parse(GPS *gps_data, uint8_t *buffer){
            }
            else if(strstr(data[i], "GPGSA")!=NULL){
                neo6m_GPGSA(gps_data, data[i]);
+           }
+           else if(strstr(data[i], "GPGGA")!=NULL){
+                neo6m_GPGGA(gps_data, data[i]);
            }
        }
 
