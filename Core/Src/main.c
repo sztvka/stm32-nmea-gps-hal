@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "neo6m_parse.h"
+#include <stdio.h>
 //#include "neo6m.h"
 /* USER CODE END Includes */
 
@@ -160,7 +161,12 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    if(myData.fix == 1){
+        char * str = malloc(sizeof(char)*200);
+        sprintf(str, "Lat: %f, Lon: %f, Alt: %f, Satellites: %d\r\n", (float)myData.latitude, (float)myData.longitude, myData.altitude, myData.satelliteCount);
+        HAL_UART_Transmit(&huart2, (uint8_t *)str, strlen(str), 1000);
+        HAL_Delay(5000);
+    }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
