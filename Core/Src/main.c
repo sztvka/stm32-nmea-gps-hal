@@ -149,9 +149,11 @@ int main(void)
 
     if(myData.fix == 1){ //if the GPS has a fix, print the data
         char * str = malloc(sizeof(char)*200);
-        sprintf(str, "%d: Lat: %f %c, Lon: %f %c, Alt: %f m, Satellites: %d HDOP: %f\r\n",
+        sprintf(str, "\r\n%d: Lat: %f %c, Lon: %f %c, Alt: %f m, Satellites: %d HDOP: %f\r\n",
                 Serialcnt, myData.latitude, myData.latSide, myData.longitude, myData.lonSide, myData.altitude, myData.satelliteCount, myData.hdop);
         HAL_UART_Transmit(&huart2, (uint8_t *)str, strlen(str), 1000);
+        //Transmit last measure time for troubleshooting
+        HAL_UART_Transmit(&huart2, (uint8_t *)myData.lastMeasure, strlen(myData.lastMeasure), 1000);
         HAL_Delay(5000);
         free(str);
     }

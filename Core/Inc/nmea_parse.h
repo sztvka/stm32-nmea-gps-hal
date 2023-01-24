@@ -15,14 +15,15 @@
  * @brief GPS data structure for storing parsed data
  ******************************************************************************/
 typedef struct NMEA_DATA {
-    double latitude;
-    char latSide;
-    double longitude;
-    char lonSide;
-    float altitude;
-    float hdop;
-    int satelliteCount;
-    int fix;
+    double latitude; //latitude in degrees with decimal places
+    char latSide;  // N or S
+    double longitude; //longitude in degrees with decimal places
+    char lonSide; // E or W
+    float altitude; //altitude in meters
+    float hdop; //horizontal dilution of precision
+    int satelliteCount; //number of satellites used in measurement
+    int fix; // 1 = fix, 0 = no fix
+    char lastMeasure[10]; // hhmmss.ss UTC of last successful measurement; time read from the GPS module
 } GPS;
 /*******************************************************************************
  * @brief Parses NMEA data from the GPS module

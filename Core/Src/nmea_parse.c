@@ -39,7 +39,7 @@ int nmea_GPGGA(GPS *gps_data, char*inputString){
     }
     char lonSide = values[5][0];
     char latSide = values[3][0];
-
+    strcpy(gps_data->lastMeasure, values[1]);
     if(latSide == 'S' || latSide == 'N'){
         char lat_d[2];
         char lat_m[7];

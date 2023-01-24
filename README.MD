@@ -30,14 +30,15 @@ memset(DataBuffer, 0, BufferSize);
 The NMEA library is passing data to the following `GPS` structure:
 ```c
 typedef struct NMEA_DATA {
-    double latitude;
-    char latSide;
-    double longitude;
-    char lonSide;
-    float altitude;
-    float hdop;
-    int satelliteCount;
-    int fix;
+    double latitude; //latitude in degrees with decimal places
+    char latSide;  // N or S
+    double longitude; //longitude in degrees with decimal places
+    char lonSide; // E or W
+    float altitude; //altitude in meters
+    float hdop; //horizontal dilution of precision
+    int satelliteCount; //number of satellites used in measurement
+    int fix; // 1 = fix, 0 = no fix
+    char lastMeasure[10]; // hhmmss.ss UTC of last successful measurement; time read from the GPS module
 } GPS;
 ```
 Before reading, remember to check if gps has a fix to avoid reading zeroes, or invalid data.
@@ -49,6 +50,8 @@ if(myData.fix == 1) {
     double longitude = myData.longitude;
 }
 ```
+
+You can also cross-compare `myData.lastMeasure` with a local RTC system to determine whether the data is fresh.  
 It is worth noting that the library may miss some messages due to invalid checksums, or the receive buffer not containing a whole NMEA message.
 
 ### Usage on chips other than STM32F4
