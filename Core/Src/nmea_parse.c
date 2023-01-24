@@ -9,11 +9,14 @@ char *data[15];
 
 int gps_checksum(char *nmea_data)
 {
+    //if you point a string with less than 5 characters the function will read outside of scope and crash the mcu.
+    if(strlen(nmea_data) < 5) return 0;
     char recv_crc[2];
     recv_crc[0] = nmea_data[strlen(nmea_data) - 4];
     recv_crc[1] = nmea_data[strlen(nmea_data) - 3];
     int crc = 0;
     int i;
+
     //exclude the CRLF plus CRC with an * from the end
     for (i = 0; i < strlen(nmea_data) - 5; i ++) {
         crc ^= nmea_data[i];

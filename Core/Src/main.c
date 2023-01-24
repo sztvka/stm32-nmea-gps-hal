@@ -47,12 +47,12 @@ DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
-#define RxBuffer_SIZE 128  //configure uart receive buffer size
+#define RxBuffer_SIZE 64  //configure uart receive buffer size
 #define DataBuffer_SIZE 512 //gather a few rxBuffer frames before parsing
 
 // Functions for UART receiving, based on the DMA receive function, implementations may vary
-int oldPos = 0;
-int newPos = 0;
+uint16_t oldPos = 0;
+uint16_t newPos = 0;
 uint8_t RxBuffer[RxBuffer_SIZE];
 uint8_t DataBuffer[DataBuffer_SIZE];
 
@@ -84,12 +84,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     oldPos = newPos; //keep track of the last position in the buffer
     if(oldPos + Size > DataBuffer_SIZE){ //if the buffer is full, parse it, then reset the buffer
-        nmea_parse(&myData, DataBuffer); //call the parser function before resetting the buffer
-        memset(DataBuffer, 0, DataBuffer_SIZE); //reset the buffer
-        oldPos = 0; //reset the position
 
-        memcpy((uint8_t *)DataBuffer+oldPos, RxBuffer, Size); //copy data that was left out to the beginning of the buffer
-        newPos = Size+oldPos;  //update buffer position
+        uint16_t datatocopy = DataBuffer_SIZE-oldPos;  // find out how much space is left in the main buffer
+        memcpy ((uint8_t *)DataBuffer+oldPos, RxBuffer, datatocopy);  // copy data in that remaining space
+
+        oldPos = 0;  // point to the start of the buffer
+        memcpy ((uint8_t *)DataBuffer, (uint8_t *)RxBuffer+datatocopy, (Size-datatocopy));  // copy the remaining data
+        newPos = (Size-datatocopy);  // update the position
     }
     else{
         memcpy((uint8_t *)DataBuffer+oldPos, RxBuffer, Size); //copy received data to the buffer
@@ -146,19 +147,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    nmea_parse(&myData, DataBuffer);
 
     if(myData.fix == 1){ //if the GPS has a fix, print the data
-        char * str = malloc(sizeof(char)*200);
+        char * str = (char*)malloc(sizeof(char)*200);
         sprintf(str, "\r\n%d: Lat: %f %c, Lon: %f %c, Alt: %f m, Satellites: %d HDOP: %f\r\n",
                 Serialcnt, myData.latitude, myData.latSide, myData.longitude, myData.lonSide, myData.altitude, myData.satelliteCount, myData.hdop);
         HAL_UART_Transmit(&huart2, (uint8_t *)str, strlen(str), 1000);
         //Transmit last measure time for troubleshooting
         HAL_UART_Transmit(&huart2, (uint8_t *)myData.lastMeasure, strlen(myData.lastMeasure), 1000);
-        HAL_Delay(5000);
+        HAL_Delay(1000);
         free(str);
     }
     else{ //if the GPS doesn't have a fix, print a message
-        char *str = malloc(sizeof(char)*15);
+        char *str = (char*)malloc(sizeof(char)*15);
         sprintf(str, "%d: No fix\r\n", Serialcnt);
         HAL_UART_Transmit(&huart2, str, strlen(str), 1000);
         HAL_Delay(5000);

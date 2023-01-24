@@ -21,9 +21,10 @@ GPS myData;
 //the library is able to work with any buffer size, as long as it contains at least one whole NMEA message
 uint8_t DataBuffer[BufferSize];
 
-//when the data is received point it to the parser, then reset the data buffer
+//when enough data is received point it to the parser, 
+//do it outside of a UART interrupt to avoid overrun errors
 nmea_parse(&myData, DataBuffer);
-memset(DataBuffer, 0, BufferSize);
+
 ```
 
 ### Data readout
