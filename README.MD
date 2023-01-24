@@ -72,7 +72,8 @@ If you plan on using this library on a chip other than STM32F4 you will need to 
 
 ## Example
 The example configured for STM32 Nucleo F411RE is provided in `Core/Src/main.c` It is set to use UART1 as a NMEA GPS serial port and UART2 as a debug serial port. The debug port is used to print the data to the console. UART1 data is received with HAL DMA peripheral.
-![Screenshot](https://user-images.githubusercontent.com/47701797/214347752-66d7c402-4522-43e1-9f62-41c30ce52bf6.png)
+![Screenshot](https://user-images.githubusercontent.com/47701797/214410931-3d108bf2-82ae-4c61-9fde-fb6cc6d1ce13.png)
+
 
 ## License
 This code is licensed under a MIT License. See the LICENSE file for details.
