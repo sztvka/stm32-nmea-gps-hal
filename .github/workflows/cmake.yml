@@ -3,6 +3,9 @@ name: CMake
 on:
   push:
     branches: [ "master" ]
+    paths-ignore:
+      - 'README.MD'
+      - 'LICENSE.MD'
   pull_request:
     branches: [ "master" ]
 

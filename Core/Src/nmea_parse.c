@@ -1,14 +1,12 @@
 //
 // Created by sztuka on 22.01.2023.
 //
-#include "neo6m_parse.h"
+#include "nmea_parse.h"
 
 
 
 char *data[15];
-//"GPGGA add
-//
-//
+
 int gps_checksum(char *nmea_data)
 {
     char recv_crc[2];

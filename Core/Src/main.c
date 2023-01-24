@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "neo6m_parse.h"
+#include "nmea_parse.h"
 #include <stdio.h>
 //#include "neo6m.h"
 /* USER CODE END Includes */
