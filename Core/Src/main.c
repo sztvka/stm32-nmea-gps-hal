@@ -84,7 +84,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     oldPos = newPos; //keep track of the last position in the buffer
     if(oldPos + Size > DataBuffer_SIZE){ //if the buffer is full, parse it, then reset the buffer
-        neo6m_parse(&myData, DataBuffer); //call the parser function before resetting the buffer
+        nmea_parse(&myData, DataBuffer); //call the parser function before resetting the buffer
         memset(DataBuffer, 0, DataBuffer_SIZE); //reset the buffer
         oldPos = 0; //reset the position
 

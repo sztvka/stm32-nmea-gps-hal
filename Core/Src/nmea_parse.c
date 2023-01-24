@@ -27,7 +27,7 @@ int gps_checksum(char *nmea_data)
     }
 }
 
-int neo6m_GPGGA(GPS *gps_data, char*inputString){
+int nmea_GPGGA(GPS *gps_data, char*inputString){
     char *values[25];
     int counter = 0;
     memset(values, 0, sizeof(values));
@@ -87,7 +87,7 @@ int neo6m_GPGGA(GPS *gps_data, char*inputString){
 }
 
 
-int neo6m_GPGSA(GPS *gps_data, char*inputString){
+int nmea_GPGSA(GPS *gps_data, char*inputString){
     char *values[25];
     int counter = 0;
     memset(values, 0, sizeof(values));
@@ -112,7 +112,7 @@ int neo6m_GPGSA(GPS *gps_data, char*inputString){
 
 
 
-int neo6m_GPGLL(GPS *gps_data, char*inputString) {
+int nmea_GPGLL(GPS *gps_data, char*inputString) {
 
     char *values[25];
     int counter = 0;
@@ -160,7 +160,7 @@ int neo6m_GPGLL(GPS *gps_data, char*inputString) {
     else return 0;
 }
 
-void neo6m_parse(GPS *gps_data, uint8_t *buffer){
+void nmea_parse(GPS *gps_data, uint8_t *buffer){
     memset(data, 0, sizeof(data));
     char * token = strtok(buffer, "$");
     int cnt = 0;
@@ -172,13 +172,13 @@ void neo6m_parse(GPS *gps_data, uint8_t *buffer){
     for(int i = 0; i<cnt; i++){
        if(strstr(data[i], "\r\n")!=NULL && gps_checksum(data[i])){
            if(strstr(data[i], "GPGLL")!=NULL){
-               neo6m_GPGLL(gps_data, data[i]);
+               nmea_GPGLL(gps_data, data[i]);
            }
            else if(strstr(data[i], "GPGSA")!=NULL){
-               neo6m_GPGSA(gps_data, data[i]);
+               nmea_GPGSA(gps_data, data[i]);
            }
            else if(strstr(data[i], "GPGGA")!=NULL){
-                neo6m_GPGGA(gps_data, data[i]);
+               nmea_GPGGA(gps_data, data[i]);
            }
        }
 

@@ -14,7 +14,7 @@
 /*******************************************************************************
  * @brief GPS data structure for storing parsed data
  ******************************************************************************/
-typedef struct NEO6M_DATA {
+typedef struct NMEA_DATA {
     double latitude;
     char latSide;
     double longitude;
@@ -29,4 +29,4 @@ typedef struct NEO6M_DATA {
  * @param gps_data Pointer to GPS struct, writes data to it
  * @param buffer Pointer to buffer string with NMEA data
  ******************************************************************************/
-void neo6m_parse(GPS *gps_data, uint8_t *buffer);
+void nmea_parse(GPS *gps_data, uint8_t *buffer);

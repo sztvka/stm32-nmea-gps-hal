@@ -21,14 +21,14 @@ GPS myData;
 uint8_t DataBuffer[BufferSize];
 
 //when the data is received point it to the parser, then reset the data buffer
-neo6m_parse(&myData, DataBuffer);
+nmea_parse(&myData, DataBuffer);
 memset(DataBuffer, 0, BufferSize);
 ```
 
 ### Data readout
 The NMEA library is passing data to the following `GPS` structure:
 ```c
-typedef struct NEO6M_DATA {
+typedef struct NMEA_DATA {
     double latitude;
     char latSide;
     double longitude;
