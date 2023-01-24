@@ -47,18 +47,18 @@ DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
-#define RxBuffer_SIZE 128
-#define DataBuffer_SIZE 512
+#define RxBuffer_SIZE 128  //configure uart receive buffer size
+#define DataBuffer_SIZE 512 //gather a few rxBuffer frames before parsing
+
+// Functions for UART receiving, based on the DMA receive function, implementations may vary
 int oldPos = 0;
 int newPos = 0;
 uint8_t RxBuffer[RxBuffer_SIZE];
 uint8_t DataBuffer[DataBuffer_SIZE];
-int dataStart[20];
-int dataEnd[20];
 
+//create a GPS data structure
 GPS myData;
 
-//char *data[15];
 
 
 /* USER CODE END PV */
@@ -77,42 +77,27 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN 0 */
 
 /*
-void ParseGPRS(){
-    int dataStartArrayPos = 0;
-    int dataEndArrayPos = 0;
-    char * token = strtok(DataBuffer, "$");
-    int cnt = 0;
-    while(token !=NULL){
-        data[cnt++] = malloc(strlen(token)+1);
-        strcpy(data[cnt-1], token);
-        token = strtok(NULL, "$");
-    }
-}
-*/
-
+ * UART buffer handler based on the DMA receive function, every implementation is valid,
+ * as long as you pass a sufficiently long receive buffer to the library.
+ * */
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-    oldPos = newPos;
-    if(oldPos + Size > DataBuffer_SIZE){
-        //volatile GPS *gps_data = malloc(sizeof(GPS)); //free later!!!!
-        neo6m_parse(&myData, DataBuffer);
-        memset(DataBuffer, 0, DataBuffer_SIZE);
-        oldPos = 0;
+    oldPos = newPos; //keep track of the last position in the buffer
+    if(oldPos + Size > DataBuffer_SIZE){ //if the buffer is full, parse it, then reset the buffer
+        neo6m_parse(&myData, DataBuffer); //call the parser function before resetting the buffer
+        memset(DataBuffer, 0, DataBuffer_SIZE); //reset the buffer
+        oldPos = 0; //reset the position
 
-        memcpy((uint8_t *)DataBuffer+oldPos, RxBuffer, Size);
-        newPos = Size+oldPos;
+        memcpy((uint8_t *)DataBuffer+oldPos, RxBuffer, Size); //copy data that was left out to the beginning of the buffer
+        newPos = Size+oldPos;  //update buffer position
     }
     else{
-        memcpy((uint8_t *)DataBuffer+oldPos, RxBuffer, Size);
-        newPos = Size+oldPos;
+        memcpy((uint8_t *)DataBuffer+oldPos, RxBuffer, Size); //copy received data to the buffer
+        newPos = Size+oldPos; //update buffer position
 
     }
-    for(int i=0; i<Size; i++){
-
-    }
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RxBuffer, RxBuffer_SIZE);
-    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
-
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RxBuffer, RxBuffer_SIZE); //re-enable the DMA interrupt
+    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT); //disable the half transfer interrupt
 }
 
 
@@ -150,9 +135,10 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RxBuffer, RxBuffer_SIZE);
   __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
-  //neo6m_init(hdma_usart1_rx, &huart1);
+
 
   /* USER CODE END 2 */
 
@@ -160,15 +146,24 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-    if(myData.fix == 1){
+
+    if(myData.fix == 1){ //if the GPS has a fix, print the data
         char * str = malloc(sizeof(char)*200);
-        sprintf(str, "Lat: %f, Lon: %f, Alt: %f, Satellites: %d\r\n", (float)myData.latitude, (float)myData.longitude, myData.altitude, myData.satelliteCount);
+        sprintf(str, "Lat: %f %c, Lon: %f %c, Alt: %f m, Satellites: %d\r\n",
+                (float)myData.latitude, myData.latSide, (float)myData.longitude, myData.lonSide, myData.altitude, myData.satelliteCount);
         HAL_UART_Transmit(&huart2, (uint8_t *)str, strlen(str), 1000);
         HAL_Delay(5000);
+        free(str);
     }
-    /* USER CODE BEGIN 3 */
+    else{ //if the GPS doesn't have a fix, print a message
+        HAL_UART_Transmit(&huart2, (uint8_t *)"No fix\r\n", 8, 1000);
+        HAL_Delay(5000);
+    }
+
+      /* USER CODE END WHILE */
+
   }
+  /* USER CODE BEGIN 3 */
   /* USER CODE END 3 */
 }
 

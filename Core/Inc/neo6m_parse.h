@@ -10,6 +10,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+
+/*******************************************************************************
+ * @brief GPS data structure for storing parsed data
+ ******************************************************************************/
 typedef struct NEO6M_DATA {
     double latitude;
     char latSide;
@@ -20,4 +24,9 @@ typedef struct NEO6M_DATA {
     int satelliteCount;
     int fix;
 } GPS;
+/*******************************************************************************
+ * @brief Parses NMEA data from the GPS module
+ * @param gps_data Pointer to GPS struct, writes data to it
+ * @param buffer Pointer to buffer string with NMEA data
+ ******************************************************************************/
 void neo6m_parse(GPS *gps_data, uint8_t *buffer);
