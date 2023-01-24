@@ -183,6 +183,7 @@ void nmea_parse(GPS *gps_data, uint8_t *buffer){
        }
 
     }
+    for(int i = 0; i<cnt; i++) free(data[i]);
 
 
 }
