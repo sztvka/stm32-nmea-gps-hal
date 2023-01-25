@@ -97,7 +97,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
         newPos = Size+oldPos; //update buffer position
 
     }
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RxBuffer, RxBuffer_SIZE); //re-enable the DMA interrupt
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)RxBuffer, RxBuffer_SIZE); //re-enable the DMA interrupt
     __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT); //disable the half transfer interrupt
 }
 
@@ -137,7 +137,7 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RxBuffer, RxBuffer_SIZE);
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)RxBuffer, RxBuffer_SIZE);
   __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
   int Serialcnt = 0;
 
