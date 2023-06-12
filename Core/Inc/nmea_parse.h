@@ -5,12 +5,10 @@
 #ifndef STM32_SERIAL_DMA_NEO6M_PARSE_H
 #define STM32_SERIAL_DMA_NEO6M_PARSE_H
 
-#endif //STM32_SERIAL_DMA_NEO6M_PARSE_H
+
 #include <stm32f4xx.h>
 #include <string.h>
 #include <stdlib.h>
-
-
 /*******************************************************************************
  * @brief GPS data structure for storing parsed data
  ******************************************************************************/
@@ -31,3 +29,6 @@ typedef struct NMEA_DATA {
  * @param buffer Pointer to buffer string with NMEA data
  ******************************************************************************/
 void nmea_parse(GPS *gps_data, uint8_t *buffer);
+#endif //STM32_SERIAL_DMA_NEO6M_PARSE_H
+
+
